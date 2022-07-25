@@ -1,3 +1,4 @@
+from django.db.models import Count, Avg, Min, Max
 from django.shortcuts import render
 from rest_framework import status
 from rest_framework.decorators import api_view
@@ -62,3 +63,22 @@ def deleteJob(request, pk):
     job.delete()
 
     return Response({'message':'Job is Deleted'}, status = status.HTTP_200_OK)
+
+@api_view(['GET'])
+def getTopicStatus(request, topic):
+
+    args = {'title__icontains': topic }
+    jobs = Job.objects.filter(**args)
+
+    if len(jobs) == 0:
+        return Response({'message':'Not stats found for {topic}'.format(topic=topic)})
+
+    stats = jobs.aggregate(
+        total_jobs = Count('title'),
+        avg_positions = Avg('positions'),
+        avg_salary = Avg('salary'),
+        min_salary = Min('salary'),
+        max_salary = Max('salary'),
+    )
+
+    return Response(stats)
