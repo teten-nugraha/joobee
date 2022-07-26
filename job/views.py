@@ -4,6 +4,7 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
+from rest_framework.pagination import PageNumberPagination
 
 from .serializers import JobSerializer
 from .models import Job
@@ -13,8 +14,23 @@ from .filters import JobFilter
 def getAllJobs(request):
 
     filterSet = JobFilter(request.GET, queryset=Job.objects.all().order_by('id'))
-    serializer = JobSerializer(filterSet.qs, many=True)
-    return Response(serializer.data)
+
+    count = filterSet.qs.count()
+
+    # pagination
+    resPerPage = 3
+
+    paginator = PageNumberPagination()
+    paginator.page_size = resPerPage
+
+    queryset = paginator.paginate_queryset(filterSet.qs, request)
+
+    serializer = JobSerializer(queryset, many=True)
+    return Response({
+        'count' : count,
+        'resPerPage': resPerPage,
+        'jobs': serializer.data
+    })
 
 @api_view(['GET'])
 def getJob(request, pk):
