@@ -33,3 +33,4 @@ def register(request):
             }, status=status.HTTP_400_BAD_REQUEST)
     else:
         return Response(user.errors)
+
