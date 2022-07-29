@@ -12,5 +12,6 @@ urlpatterns = [
     path('me/jobs/applied', views.getCurrentUserAppliedJobs, name='current_user_applied_job'),
     path('jobs/<str:pk>/check', views.isApplied, name='is_applied_to_jo'),
     path('me/jobs', views.getCurrentUserJobs, name='current_user_jobs'),
+    path('jobs/<str:pk>/candidates', views.getCandidatesApplied, name='candidates_applied'),
 
 ]
